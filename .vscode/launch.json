@@ -8,7 +8,7 @@
       "type": "lldb",
       "request": "launch",
       "name": "Debug",
-      "program": "/Users/yanhaoli/Dropbox/university/nyu/classes/20fall/computer-graphic/cg-1/build/convex_hull",
+      "program": "${workspaceFolder}/build/convex_hull",
       "args": [
         "${workspaceFolder}/data/points.xyz",
         "${workspaceFolder}/build/output.obj"

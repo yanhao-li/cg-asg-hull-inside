@@ -46,14 +46,19 @@ Polygon convex_hull(std::vector<Point> &points) {
 std::vector<Point> load_xyz(const std::string &filename) {
 	std::vector<Point> points;
 	std::ifstream in(filename);
+
 	std::string line;
-	if (in.is_open()) {
-		while (std::getline(in, line) )
-			{
-				std::cout << line << '\n';
-			}
-    in.close();
+
+	std::getline(in, line);
+	int total_points = stoi(line);
+
+	double x, y;
+	while (std::getline(in, line))
+	{
+		in >> x >> y;
+		points.push_back(Point(x, y));
 	}
+
 	return points;
 }
 
