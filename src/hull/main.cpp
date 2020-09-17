@@ -5,6 +5,7 @@
 #include <iostream>
 #include <numeric>
 #include <vector>
+#include <limits.h>
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef std::complex<double> Point;
@@ -32,8 +33,14 @@ bool inline salientAngle(Point &a, Point &b, Point &c) {
 
 Polygon convex_hull(std::vector<Point> &points) {
 	Compare order;
-	// TODO
-	order.p0 = Point(0, 0);
+	Point p0 = points[0];
+	for (Point point : points) {
+		if (point.real() < p0.real()) {
+			p0 = point;
+		}
+	}
+
+	order.p0 = p0;
 	std::sort(points.begin(), points.end(), order);
 	Polygon hull;
 	// TODO
