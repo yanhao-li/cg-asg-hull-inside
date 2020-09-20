@@ -6,21 +6,39 @@
 #include <numeric>
 #include <vector>
 #include <limits.h>
+#include <math.h>
 ////////////////////////////////////////////////////////////////////////////////
 
+#define PI 3.14159265
 typedef std::complex<double> Point;
 typedef std::vector<Point> Polygon;
 
 double inline det(const Point &u, const Point &v) {
 	// TODO
 	return 0;
+} 
+
+// p0 = (115.976, 432.047)
+// p = (250.358, 432.033)
+// xy = (134.382, 0.014)
+// y / x = 0.000104
+
+// get point's polar angle with P0
+double inline getAngle(const Point p0, const Point p) {
+	double y = abs(p.imag() - p0.imag());
+	double x = abs(p.real() - p0.real());
+	double angle = p0 == p ? 0 : atan(y / x);
+	angle = angle < 0 ? angle + PI : angle;
+
+	return angle;
 }
 
 struct Compare {
 	Point p0; // Leftmost point of the poly
-	bool operator ()(const Point &p1, const Point &p2) {
-		// TODO
-		return true;
+	bool operator ()(const Point p1, const Point p2) {
+		double angle1 = getAngle(p0, p1);
+		double angle2 = getAngle(p0, p2);
+		return angle1 < angle2;
 	}
 };
 
@@ -37,11 +55,18 @@ Polygon convex_hull(std::vector<Point> &points) {
 	for (Point point : points) {
 		if (point.real() < p0.real()) {
 			p0 = point;
+		} else if (point.real() == p0.real() && point.imag() < p0.imag()) {
+			p0 = point;
 		}
 	}
 
 	order.p0 = p0;
 	std::sort(points.begin(), points.end(), order);
+	for (Point point : points) {
+		std::cout << getAngle(p0, point) << " ";
+	}
+
+	std::cout << std::endl;
 	Polygon hull;
 	// TODO
 	// use salientAngle(a, b, c) here
