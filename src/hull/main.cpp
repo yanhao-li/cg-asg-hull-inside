@@ -18,18 +18,15 @@ double inline det(const Point &u, const Point &v) {
 	return 0;
 } 
 
-// p0 = (115.976, 432.047)
-// p = (250.358, 432.033)
-// xy = (134.382, 0.014)
-// y / x = 0.000104
+double inline dot(const Point &u, const Point &v) {
+	return u.real() * v.real() + u.imag() * v.imag();
+}
 
-// get point's polar angle with P0
 double inline getAngle(const Point p0, const Point p) {
 	double y = abs(p.imag() - p0.imag());
 	double x = abs(p.real() - p0.real());
 	double angle = p0 == p ? 0 : atan(y / x);
 	angle = angle < 0 ? angle + PI : angle;
-
 	return angle;
 }
 
@@ -43,14 +40,16 @@ struct Compare {
 };
 
 bool inline salientAngle(Point &a, Point &b, Point &c) {
-	// TODO
-	return false;
+	std::complex<double> ba(a.real() - b.real(), a.imag() - b.imag());
+	std::complex<double> bc(c.real() - b.real(), c.imag() - b.imag());
+	return dot(ba, bc) > 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 Polygon convex_hull(std::vector<Point> &points) {
 	Compare order;
+	// find p0
 	Point p0 = points[0];
 	for (Point point : points) {
 		if (point.real() < p0.real()) {
@@ -62,13 +61,17 @@ Polygon convex_hull(std::vector<Point> &points) {
 
 	order.p0 = p0;
 	std::sort(points.begin(), points.end(), order);
-	for (Point point : points) {
-		std::cout << getAngle(p0, point) << " ";
-	}
 
-	std::cout << std::endl;
 	Polygon hull;
-	// TODO
+	for (int i = 0; i < points.size(); i++) {
+		const Point point = points[i];
+
+		if (i > 1 && salientAngle(points[i], points[i - 1], points[i - 2])) {
+			hull.pop_back();
+		}
+
+		hull.push_back(points[i]);
+	}
 	// use salientAngle(a, b, c) here
 	return hull;
 }
