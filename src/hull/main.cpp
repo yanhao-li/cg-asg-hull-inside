@@ -118,9 +118,9 @@ void save_obj(const std::string &filename, Polygon &poly) {
 	for (const auto &v : poly) {
 		out << "v " << v.real() << ' ' << v.imag() << " 0\n";
 	}
-	// for (size_t i = 0; i < poly.size(); ++i) {
-	// 	out << "l " << i+1 << ' ' << 1+(i+1)%poly.size() << "\n";
-	// }
+	for (size_t i = 0; i < poly.size(); ++i) {
+		out << "l " << i+1 << ' ' << 1+(i+1)%poly.size() << "\n";
+	}
 	out << std::endl;
 }
 

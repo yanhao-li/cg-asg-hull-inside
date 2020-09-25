@@ -11,37 +11,43 @@ typedef std::complex<double> Point;
 typedef std::vector<Point> Polygon;
 double right_most_x = INT_MIN;
 
-double inline det(const Point &u, const Point &v) {
-	// TODO
-	return 0;
-}
-
 // Return true iff [a,b] intersects [c,d], and store the intersection in ans
 bool intersect_segment(const Point &a, const Point &b, const Point &c, const Point &d, Point &ans) {
-	double deno = (a.real() - b.real()) * (c.imag()-d.imag()) - (a.imag() - b.imag()) * (c.real() - d.real());
-	if (deno == 0) return false;
-	double axby_aybx = a.real() * b.imag() - a.imag() * b.real();
-	double cxdy_cydx = c.real() * d.imag() - c.imag() * d.real();
-	ans.real(
-		(axby_aybx * (c.real() - d.real()) - (a.real() - b.real()) * cxdy_cydx)
-		/ deno
-	);
-	ans.imag(
-		(axby_aybx * (c.imag() - d.imag()) - (a.imag() - b.imag()) * cxdy_cydx)
-		/ deno
-	);
+	// ab, cd are parallel
+	if ((d.imag() - c.imag()) * (b.real() - a.real()) == (b.imag() - a.imag()) * (d.real() - c.real())) {
+		// ab, cd are conllinear
+		if ((b.imag() - a.imag()) * (c.real() - a.real()) == (c.imag() - a.imag()) * (b.real() - a.real())) {
+			return false;
+		} else return false;
+	} else {
+		double t1 = (c.real() * (d.imag() - c.imag()) + a.imag() * (d.real() - c.real()) - c.imag() * (d.real() - c.real()) - a.real() * (d.imag() - c.imag()))
+		/ ((b.real() - a.real()) * (d.imag() - c.imag()) - (d.real() - c.real()) * (b.imag() - a.imag()));
+		double t2 = (a.real() * (b.imag() - a.imag()) + c.imag() * (b.real() - a.real()) - a.imag() * (b.real() - a.real()) - c.real() * (b.imag() - a.imag()))
+		/ ((d.real() - c.real()) * (b.imag() - a.imag()) - (b.real() - a.real()) * (d.imag() - c.imag()));
+
+		if (t1 >= 0.0 && t1 <= 1.0 && t2 >= 0.0 && t2 <= 1.0) {
+				ans = {a.real() + t1 * (b.real() - a.real()), a.imag() + t1 * (b.imag() - a.imag())};
+		} else return false;
+	}
 	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 bool is_inside(const Polygon &poly, const Point &query) {
-	// 1. Compute bounding box and set coordinate of a point outside the polygon
-	// TODO
 	Point outside(right_most_x + 1, query.imag());
-	// 2. Cast a ray from the query point to the 'outside' point, count number of intersections
-	// TODO
-	return true;
+	int intersect_count = 0;
+
+	// 1. Compute bounding box and set coordinate of a point outside the polygon
+	for (int i = 0; i < poly.size() - 1; i++) {
+		Point ans;
+		// 2. Cast a ray from the query point to the 'outside' point, count number of intersections
+		if (intersect_segment(poly[i], poly[i + 1], query, outside, ans)) {
+			intersect_count++;
+		}
+	}
+
+	return intersect_count % 2 != 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -80,7 +86,15 @@ Polygon load_obj(const std::string &filename) {
 }
 
 void save_xyz(const std::string &filename, const std::vector<Point> &points) {
-	// TODO
+	std::ofstream out(filename);
+	if (!out.is_open()) {
+		throw std::runtime_error("failed to open file " + filename);
+	}
+	out << std::fixed;
+	for (const auto &p : points) {
+		out << p.real() << " " << p.imag() << " " << 0 << "\n";
+	}
+	out << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -91,6 +105,12 @@ int main(int argc, char * argv[]) {
 	}
 	std::vector<Point> points = load_xyz(argv[1]);
 	Polygon poly = load_obj(argv[2]);
+
+	//***** TEST START *******
+	// Point ans;
+	// std::cout << intersect_segment(Point(1, 3), Point(6, 3), Point(2, 2), Point(4, 1), ans) << std::endl;
+	//*****TEST START ********
+
 	std::vector<Point> result;
 	for (size_t i = 0; i < points.size(); ++i) {
 		if (is_inside(poly, points[i])) {
