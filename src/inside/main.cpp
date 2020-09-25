@@ -9,6 +9,7 @@
 
 typedef std::complex<double> Point;
 typedef std::vector<Point> Polygon;
+double right_most_x = INT_MIN;
 
 double inline det(const Point &u, const Point &v) {
 	// TODO
@@ -17,7 +18,18 @@ double inline det(const Point &u, const Point &v) {
 
 // Return true iff [a,b] intersects [c,d], and store the intersection in ans
 bool intersect_segment(const Point &a, const Point &b, const Point &c, const Point &d, Point &ans) {
-	// TODO
+	double deno = (a.real() - b.real()) * (c.imag()-d.imag()) - (a.imag() - b.imag()) * (c.real() - d.real());
+	if (deno == 0) return false;
+	double axby_aybx = a.real() * b.imag() - a.imag() * b.real();
+	double cxdy_cydx = c.real() * d.imag() - c.imag() * d.real();
+	ans.real(
+		(axby_aybx * (c.real() - d.real()) - (a.real() - b.real()) * cxdy_cydx)
+		/ deno
+	);
+	ans.imag(
+		(axby_aybx * (c.imag() - d.imag()) - (a.imag() - b.imag()) * cxdy_cydx)
+		/ deno
+	);
 	return true;
 }
 
@@ -26,7 +38,7 @@ bool intersect_segment(const Point &a, const Point &b, const Point &c, const Poi
 bool is_inside(const Polygon &poly, const Point &query) {
 	// 1. Compute bounding box and set coordinate of a point outside the polygon
 	// TODO
-	Point outside(0, 0);
+	Point outside(right_most_x + 1, query.imag());
 	// 2. Cast a ray from the query point to the 'outside' point, count number of intersections
 	// TODO
 	return true;
