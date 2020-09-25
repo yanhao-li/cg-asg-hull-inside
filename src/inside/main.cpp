@@ -39,10 +39,10 @@ bool is_inside(const Polygon &poly, const Point &query) {
 	int intersect_count = 0;
 
 	// 1. Compute bounding box and set coordinate of a point outside the polygon
-	for (int i = 0; i < poly.size() - 1; i++) {
+	for (int i = 0; i < poly.size(); i++) {
 		Point ans;
 		// 2. Cast a ray from the query point to the 'outside' point, count number of intersections
-		if (intersect_segment(poly[i], poly[i + 1], query, outside, ans)) {
+		if (intersect_segment(poly[i], poly[i == poly.size() - 1 ? 0 : i + 1], query, outside, ans)) {
 			intersect_count++;
 		}
 	}
@@ -105,6 +105,12 @@ int main(int argc, char * argv[]) {
 	}
 	std::vector<Point> points = load_xyz(argv[1]);
 	Polygon poly = load_obj(argv[2]);
+
+	for (Point p : poly) {
+		if (p.real() > right_most_x) {
+			right_most_x = p.real();
+		}
+	}
 
 	//***** TEST START *******
 	// Point ans;

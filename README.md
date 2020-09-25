@@ -65,3 +65,9 @@ l 24 1
 ![](img/hull.png?raw=true)
 
 ---
+
+## 2. Point In Polygon
+
+results.xyz contains all 1663 points that inside the polygon provided.
+![](img/inside_2.png?raw=true)
+![](img/inside_1.png?raw=true)
