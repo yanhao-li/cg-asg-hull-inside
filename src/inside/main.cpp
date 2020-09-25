@@ -37,14 +37,34 @@ bool is_inside(const Polygon &poly, const Point &query) {
 std::vector<Point> load_xyz(const std::string &filename) {
 	std::vector<Point> points;
 	std::ifstream in(filename);
-	// TODO
+
+	int total_points;
+	in >> total_points;
+
+	double x, y, z;
+	while (in >> x >> y >> z)
+	{
+		points.push_back(Point(x, y));
+	}
+
 	return points;
 }
 
 Polygon load_obj(const std::string &filename) {
 	std::ifstream in(filename);
-	// TODO
-	return {};
+	std::string line;
+	std::vector<Point> ret;
+	while (std::getline(in, line)) {
+		if (line.rfind("v", 0) == 0) {
+			std::istringstream iss(line);
+			char v, zero;
+			double x, y;
+			iss >> v >> x >> y >> zero;
+			ret.push_back(Point(x, y));
+		}
+	}
+
+	return ret;
 }
 
 void save_xyz(const std::string &filename, const std::vector<Point> &points) {
